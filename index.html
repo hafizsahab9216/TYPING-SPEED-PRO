@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypeSpeed Pro - Master Your Typing Speed & Accuracy</title>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header Navigation -->
+    <header class="navbar">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-keyboard"></i>
+        </div>
+        <div class="logo-text">
+          <h1>Type<span>Speed</span> Pro</h1>
+          <p>Boost your typing speed & accuracy</p>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Sound Effect Toggle -->
+        <button id="soundToggle" class="icon-btn" title="Toggle Mechanical Keyboard Sound">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+
+        <!-- Virtual Keyboard Toggle -->
+        <button id="kbToggle" class="icon-btn" title="Toggle Virtual Keyboard Guide">
+          <i class="fa-solid fa-table-cells"></i>
+        </button>
+
+        <!-- Theme Selector -->
+        <div class="theme-dropdown">
+          <button id="themeBtn" class="icon-btn" title="Change Theme">
+            <i class="fa-solid fa-palette"></i>
+          </button>
+          <div class="theme-menu" id="themeMenu">
+            <button class="theme-opt active" data-theme="dark"><i class="fa-solid fa-moon"></i> Dark Neon</button>
+            <button class="theme-opt" data-theme="cyberpunk"><i class="fa-solid fa-bolt"></i> Cyberpunk</button>
+            <button class="theme-opt" data-theme="midnight"><i class="fa-solid fa-cloud-moon"></i> Midnight Blue</button>
+            <button class="theme-opt" data-theme="emerald"><i class="fa-solid fa-gem"></i> Emerald Forest</button>
+            <button class="theme-opt" data-theme="light"><i class="fa-solid fa-sun"></i> Pure Light</button>
+          </div>
+        </div>
+
+        <!-- History Modal Trigger -->
+        <button id="historyBtn" class="icon-btn" title="View Typing History">
+          <i class="fa-solid fa-chart-line"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mode & Options Bar -->
+    <div class="control-panel">
+      <!-- Main Mode Switcher -->
+      <div class="mode-group" id="mainModeGroup">
+        <button class="mode-btn active" data-mode="time"><i class="fa-regular fa-clock"></i> Time Test</button>
+        <button class="mode-btn" data-mode="words"><i class="fa-solid fa-font"></i> Word Target</button>
+        <button class="mode-btn" data-mode="practice"><i class="fa-solid fa-dumbbell"></i> Endless Practice</button>
+        <button class="mode-btn" data-mode="custom"><i class="fa-solid fa-pen-to-square"></i> Custom Text</button>
+      </div>
+
+      <div class="sub-control-divider"></div>
+
+      <!-- Sub Mode Options: Time durations -->
+      <div class="sub-group" id="timeOptions">
+        <button class="sub-btn" data-value="15">15s</button>
+        <button class="sub-btn active" data-value="30">30s</button>
+        <button class="sub-btn" data-value="60">60s</button>
+        <button class="sub-btn" data-value="120">120s</button>
+      </div>
+
+      <!-- Sub Mode Options: Word counts -->
+      <div class="sub-group hidden" id="wordOptions">
+        <button class="sub-btn" data-value="10">10 words</button>
+        <button class="sub-btn active" data-value="25">25 words</button>
+        <button class="sub-btn" data-value="50">50 words</button>
+        <button class="sub-btn" data-value="100">100 words</button>
+      </div>
+
+      <!-- Difficulty Modifiers -->
+      <div class="sub-group modifiers-group">
+        <button class="mod-btn" id="modPunctuation" title="Include Punctuation Marks"><i class="fa-solid fa-quote-left"></i> Punctuation</button>
+        <button class="mod-btn" id="modNumbers" title="Include Numbers"><i class="fa-solid fa-hashtag"></i> Numbers</button>
+      </div>
+    </div>
+
+    <!-- Live Real-Time Stats Bar -->
+    <div class="live-stats-bar">
+      <div class="stat-card">
+        <span class="stat-label">WPM</span>
+        <span class="stat-val" id="liveWpm">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">ACCURACY</span>
+        <span class="stat-val" id="liveAccuracy">100%</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label" id="timerLabel">TIME</span>
+        <span class="stat-val" id="liveTimer">30s</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">RAW / CPM</span>
+        <span class="stat-val" id="liveCpm">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">ERRORS</span>
+        <span class="stat-val stat-error" id="liveErrors">0</span>
+      </div>
+    </div>
+
+    <!-- Main Typing Playground -->
+    <main class="typing-arena" id="typingArena">
+      <!-- Hidden Input for Mobile and Keyboard capturing -->
+      <input type="text" id="hiddenInput" class="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+      <div class="words-wrapper" id="wordsWrapper">
+        <div class="caret" id="caret"></div>
+        <div class="words-container" id="wordsContainer">
+          <!-- Dynamically populated with spans -->
+        </div>
+      </div>
+
+      <!-- Focus Reminder Hint -->
+      <div class="focus-notice" id="focusNotice">
+        <i class="fa-solid fa-arrow-pointer"></i> Click anywhere or start typing to focus
+      </div>
+
+      <!-- Bottom Quick Actions -->
+      <div class="arena-footer">
+        <button id="restartBtn" class="action-btn" title="Restart (Tab + Enter)">
+          <i class="fa-solid fa-rotate-right"></i> Restart Test
+        </button>
+        <span class="shortcut-tip">Tip: Press <kbd>Tab</kbd> + <kbd>Enter</kbd> to quick-restart</span>
+      </div>
+    </main>
+
+    <!-- Interactive Touch Typing Keyboard Visualizer -->
+    <div class="keyboard-section" id="keyboardSection">
+      <div class="keyboard-header">
+        <span><i class="fa-solid fa-hand"></i> Interactive Touch-Typing Visualizer</span>
+        <span class="finger-legend">
+          <span class="dot pinky"></span> Pinky
+          <span class="dot ring"></span> Ring
+          <span class="dot middle"></span> Middle
+          <span class="dot index"></span> Index
+          <span class="dot thumb"></span> Thumb
+        </span>
+      </div>
+      <div class="virtual-keyboard" id="virtualKeyboard">
+        <!-- Keyboard rows rendered dynamically in script -->
+      </div>
+    </div>
+
+    <!-- Tips & Guides Section -->
+    <section class="tips-section">
+      <div class="tip-card">
+        <div class="tip-icon"><i class="fa-solid fa-crosshairs"></i></div>
+        <div class="tip-body">
+          <h3>Accuracy Over Speed</h3>
+          <p>Prioritize accuracy above 95% first. Your typing speed will naturally accelerate as muscle memory develops.</p>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon"><i class="fa-solid fa-hand-fist"></i></div>
+        <div class="tip-body">
+          <h3>Home Row Technique</h3>
+          <p>Keep your fingers resting gently on <b>ASDF</b> (left hand) and <b>JKL;</b> (right hand). Feel the bumps on <b>F</b> and <b>J</b>.</p>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
+        <div class="tip-body">
+          <h3>Daily Practice</h3>
+          <p>Just 10 to 15 minutes of structured daily practice will double your typing speed in less than 30 days!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Crafted for Speed Typer Enthusiasts &bull; Master Your Keyboard Skills</p>
+    </footer>
+  </div>
+
+  <!-- Results Modal -->
+  <div class="modal-overlay" id="resultsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="badge-tag" id="speedRankBadge">Master Typer 🚀</div>
+        <h2>Test Results</h2>
+      </div>
+
+      <div class="results-grid">
+        <div class="result-big-stat">
+          <span class="res-label">Net Speed</span>
+          <span class="res-num highlight" id="resWpm">0</span>
+          <span class="res-unit">WPM</span>
+        </div>
+        <div class="result-big-stat">
+          <span class="res-label">Accuracy</span>
+          <span class="res-num" id="resAccuracy">0%</span>
+          <span class="res-unit">Precision</span>
+        </div>
+        <div class="result-detail-stat">
+          <span class="det-label"><i class="fa-solid fa-bolt"></i> Raw Speed:</span>
+          <span class="det-val" id="resRawWpm">0 WPM</span>
+        </div>
+        <div class="result-detail-stat">
+          <span class="det-label"><i class="fa-solid fa-circle-check"></i> Characters:</span>
+          <span class="det-val" id="resChars">0 / 0</span>
+        </div>
+        <div class="result-detail-stat">
+          <span class="det-label"><i class="fa-solid fa-circle-xmark"></i> Errors Made:</span>
+          <span class="det-val error-text" id="resErrors">0</span>
+        </div>
+        <div class="result-detail-stat">
+          <span class="det-label"><i class="fa-solid fa-stopwatch"></i> Time Elapsed:</span>
+          <span class="det-val" id="resTime">30s</span>
+        </div>
+      </div>
+
+      <!-- Speed Meter Feedback -->
+      <div class="speed-meter-box">
+        <div class="meter-bar-bg">
+          <div class="meter-bar-fill" id="meterFill"></div>
+        </div>
+        <p class="feedback-msg" id="feedbackMessage">Excellent performance! Keep pushing!</p>
+      </div>
+
+      <div class="modal-actions">
+        <button id="modalRestartBtn" class="primary-btn"><i class="fa-solid fa-rotate-right"></i> Next Test</button>
+        <button id="modalShareBtn" class="secondary-btn"><i class="fa-solid fa-share-nodes"></i> Copy Summary</button>
+        <button id="modalCloseBtn" class="tertiary-btn"><i class="fa-solid fa-xmark"></i> Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Text Modal -->
+  <div class="modal-overlay" id="customTextModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="badge-tag">Custom Test</div>
+        <h2>Paste or Write Your Custom Text</h2>
+      </div>
+      <div class="custom-input-area">
+        <textarea id="customTextInput" rows="6" placeholder="Paste your practice paragraphs, code snippets, or custom sentences here..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button id="customTextApplyBtn" class="primary-btn"><i class="fa-solid fa-play"></i> Start Practice</button>
+        <button id="customTextCancelBtn" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History & Stats Modal -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-card wide-card">
+      <div class="modal-header">
+        <div class="badge-tag">Your Progress</div>
+        <h2>Typing History & Records</h2>
+      </div>
+      <div class="history-overview">
+        <div class="h-card">
+          <span class="h-title">Highest WPM</span>
+          <span class="h-val" id="histHighestWpm">0</span>
+        </div>
+        <div class="h-card">
+          <span class="h-title">Avg Accuracy</span>
+          <span class="h-val" id="histAvgAcc">0%</span>
+        </div>
+        <div class="h-card">
+          <span class="h-title">Tests Completed</span>
+          <span class="h-val" id="histTotalTests">0</span>
+        </div>
+      </div>
+      <div class="history-table-wrapper">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Mode</th>
+              <th>WPM</th>
+              <th>Raw WPM</th>
+              <th>Accuracy</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-actions space-between">
+        <button id="clearHistoryBtn" class="danger-btn"><i class="fa-solid fa-trash-can"></i> Clear History</button>
+        <button id="closeHistoryBtn" class="primary-btn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
